@@ -28,6 +28,7 @@ jobs:
               --output html \
               --output-path="reports/$site_name"  # Sets base path for both JSON and HTML outputs
             
+            ls reports
             # Check the JSON result for TTI
             json_report_path="reports/$site_name.report.json"
             if [ -f "$json_report_path" ]; then
