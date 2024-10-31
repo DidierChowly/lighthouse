@@ -5,12 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
       - name: Install Lighthouse
         run: npm install -g lighthouse
@@ -18,9 +18,10 @@ jobs:
       - name: Run Lighthouse Audits
         run: |
           mkdir reports
-          websites=( "https://himalayanflavor.onlineorder.site" )
+          websites=( "https://himalayanflavor.onlineorder.site" "https://site2.com" "https://site3.com" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
+            site_name=$(echo $site | sed 's/https:\/\///g')
             lighthouse "$site" \
               --chrome-flags="--headless --no-sandbox" \
               --output json \
@@ -54,11 +55,11 @@ jobs:
           name: lighthouse-reports
           path: reports/
 
-      # - name: Send Slack Notification
-      #   if: failure()
-      #   env:
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #   run: |
-      #     curl -X POST -H 'Content-type: application/json' --data '{
-      #       "text": "⚠️ Lighthouse audit failed for one or more websites: load time exceeded 10s. Check the reports for details."
-      #     }' $SLACK_WEBHOOK_URL
+      - name: Send Slack Notification
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "⚠️ Lighthouse audit failed for one or more websites: load time exceeded 10s or reports missing. Check the reports for details."
+          }' $SLACK_WEBHOOK_URL
