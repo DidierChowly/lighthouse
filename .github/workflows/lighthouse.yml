@@ -38,12 +38,17 @@ jobs:
             json_report_path="reports/$site_name.report.json"
             if [ -f "$json_report_path" ]; then
               load_time=$(cat "$json_report_path" | jq '.audits["interactive"].numericValue')
-              
+
               # Convert milliseconds to seconds
               load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
               
+              # Append load time to the HTML report
+              echo "<p>Load Time: ${load_time_in_seconds}s</p>" >> "reports/$site_name.report"
+              
+              
               if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
                 echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
+                exit 1  # Fail the job if load time exceeds 10 seconds
               else
                 echo "✅ $site loaded in ${load_time_in_seconds}s"
               fi
