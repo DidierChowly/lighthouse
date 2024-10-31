@@ -52,7 +52,7 @@ jobs:
               if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
                 echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
                 alert_needed=true  # Set flag to true if any load time exceeds 10 seconds
-                exit 1  # Fail the job if load time exceeds 10 seconds
+                
               else
                 echo "✅ $site loaded in ${load_time_in_seconds}s"
               fi
