@@ -10,7 +10,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Lighthouse
         run: npm install -g lighthouse
@@ -22,10 +22,10 @@ jobs:
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             lighthouse "$site" \
-             --chrome-flags="--headless --no-sandbox" \  # Run in headless mode with no sandbox
+              --chrome-flags="--headless --no-sandbox" \
               --output json \
               --output html \
-              --output-path "reports/$(echo $site | sed 's/https:\/\///g').report"
+              --output-path "reports/$(echo $site | sed 's/https:\/\///g').report"  # Correct continuation and syntax
             
             # Check the JSON result for TTI
             load_time=$(cat "reports/$(echo $site | sed 's/https:\/\///g').report.json" | jq '.audits["interactive"].numericValue')
