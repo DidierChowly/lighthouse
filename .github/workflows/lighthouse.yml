@@ -35,7 +35,7 @@ jobs:
             ls reports
 
             # Check the JSON result for TTI
-            json_report_path="reports/$site_name.report.json"
+            json_report_path="reports/$site_name.report.report.json"
             if [ -f "$json_report_path" ]; then
               load_time=$(cat "$json_report_path" | jq '.audits["interactive"].numericValue')
 
@@ -43,6 +43,7 @@ jobs:
               load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
 
               echo "reports/$site_name.report.html"
+              echo "${load_time_in_seconds}"
               
               # Append load time to the HTML report
               echo "<p>Load Time: ${load_time_in_seconds}s</p>" >> "reports/$site_name.report.html"
