@@ -72,6 +72,7 @@ jobs:
             fi
           done
           echo ${alert_needed}
+          echo "alert_needed=$alert_needed" >> $GITHUB_ENV  # Export as environment variable
         shell: bash
 
       - name: Upload Report as Artifact
@@ -82,7 +83,7 @@ jobs:
           path: reports/
 
       - name: Send Slack Notification
-        if: steps.lighthouse_audit.outputs.alert_needed == 'true'
+        if: env.alert_needed == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           REPO_NAME: ${{ github.repository }}
