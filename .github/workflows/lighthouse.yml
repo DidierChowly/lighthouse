@@ -43,7 +43,7 @@ jobs:
               load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
               
               # Append load time to the HTML report
-              echo "<p>Load Time: ${load_time_in_seconds}s</p>" >> "reports/$site_name.report"
+              echo "<p>Load Time: ${load_time_in_seconds}s</p>" >> "reports/$site_name.report.html"
               
               
               if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
