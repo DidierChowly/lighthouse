@@ -73,6 +73,12 @@ jobs:
           done
           echo ${alert_needed}
           echo "alert_needed=$alert_needed" >> $GITHUB_ENV  # Export as environment variable
+
+          # Exit with status 1 if alert_needed is true
+          if [ "$alert_needed" = true ]; then
+            echo "One or more sites exceeded the 10s load time threshold. Exiting with status 1."
+            exit 1
+          fi
         shell: bash
 
       - name: Upload Report as Artifact
