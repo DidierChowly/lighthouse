@@ -18,7 +18,7 @@ jobs:
       - name: Run Lighthouse Audits
         run: |
           mkdir reports
-          websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan%20Flavor%20-%20Logan" "https://joshandjohns.onlineorder.site" )
+          websites=( "https://himalayanflavor.onlineorder.site" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             lighthouse "$site" \
