@@ -1,5 +1,15 @@
 name: Lighthouse Performance Check
-on: [push, pull_request]
+on:
+  push: # Trigger on push events
+    branches:
+      - main # Only run on the main branch (adjust as needed)
+  pull_request: # Trigger on pull request events
+    branches:
+      - main # Only run on pull requests to the main branch (adjust as needed)
+  schedule: # Trigger on a schedule
+    - cron: "*/15 * * * *" # Run every 15 minutes
+  workflow_dispatch: # Allow manual trigger
+
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
@@ -19,6 +29,7 @@ jobs:
         continue-on-error: true # Allow this step to continue even if it fails
         run: |
           mkdir reports
+          alert_needed=false
           websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan Flavor - Logan" "https://joshandjohns.onlineorder.site" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
@@ -60,6 +71,7 @@ jobs:
               echo "⚠️ JSON report for $site not found at $json_report_path"
             fi
           done
+          echo ${alert_needed}
         shell: bash
 
       - name: Upload Report as Artifact
