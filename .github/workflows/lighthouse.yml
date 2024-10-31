@@ -26,7 +26,7 @@ jobs:
               --chrome-flags="--headless --no-sandbox" \
               --output json \
               --output html \
-              --output-path="reports/$site_name.report"  # Sets base path for both JSON and HTML outputs
+              --output-path="reports/$site_name"  # Sets base path for both JSON and HTML outputs
             
             # Check the JSON result for TTI
             json_report_path="reports/$site_name.report.json"
