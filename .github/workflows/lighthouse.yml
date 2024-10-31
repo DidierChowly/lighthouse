@@ -22,6 +22,7 @@ jobs:
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             lighthouse "$site" \
+             --chrome-flags="--headless --no-sandbox" \  # Run in headless mode with no sandbox
               --output json \
               --output html \
               --output-path "reports/$(echo $site | sed 's/https:\/\///g').report"
