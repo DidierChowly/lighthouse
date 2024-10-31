@@ -25,19 +25,25 @@ jobs:
               --chrome-flags="--headless --no-sandbox" \
               --output json \
               --output html \
-              --output-path "reports/$(echo $site | sed 's/https:\/\///g').report"  # Correct continuation and syntax
+              --output-path="reports/$site_name.report"  # Sets base path for both JSON and HTML outputs
             
             # Check the JSON result for TTI
-            load_time=$(cat "reports/$(echo $site | sed 's/https:\/\///g').report.json" | jq '.audits["interactive"].numericValue')
-            
-            # Convert milliseconds to seconds
-            load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
-            
-            if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
-              echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
-              exit 1  # Fail the action if load time is over 10 seconds
+            json_report_path="reports/$site_name.report.json"
+            if [ -f "$json_report_path" ]; then
+              load_time=$(cat "$json_report_path" | jq '.audits["interactive"].numericValue')
+              
+              # Convert milliseconds to seconds
+              load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
+              
+              if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
+                echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
+                exit 1  # Fail the action if load time is over 10 seconds
+              else
+                echo "✅ $site loaded in ${load_time_in_seconds}s"
+              fi
             else
-              echo "✅ $site loaded in ${load_time_in_seconds}s"
+              echo "⚠️ JSON report for $site not found at $json_report_path"
+              exit 1  # Fail if JSON report is missing
             fi
           done
         shell: bash
