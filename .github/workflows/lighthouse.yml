@@ -26,7 +26,7 @@ jobs:
         run: npm install -g lighthouse
 
       - name: Run Lighthouse Audits
-        continue-on-error: true # Allow this step to continue even if it fails
+        # continue-on-error: true # Allow this step to continue even if it fails
         run: |
           mkdir reports
           alert_needed=false
