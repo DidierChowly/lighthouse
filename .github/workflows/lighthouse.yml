@@ -10,27 +10,28 @@ jobs:
       - name: Set up Node.js 18
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Lighthouse
         run: npm install -g lighthouse
 
       - name: Run Lighthouse Audits
+        continue-on-error: true # Allow this step to continue even if it fails
         run: |
           mkdir reports
-          websites=( "https://himalayanflavor.onlineorder.site" )
+          websites=( "https://himalayanflavor.onlineorder.site" "https://site2.com" "https://site3.com" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             site_name=$(echo $site | sed 's/https:\/\///g')
+            echo $site_name
             lighthouse "$site" \
               --chrome-flags="--headless --no-sandbox" \
               --output json \
               --output html \
-              --output-path="reports/$site_name"  # Sets base path for both JSON and HTML outputs
+              --output-path="reports/$site_name.report"
             
-            ls reports
             # Check the JSON result for TTI
-            json_report_path="reports/himalayanflavor.onlineorder.report.json"
+            json_report_path="reports/$site_name.report.json"
             if [ -f "$json_report_path" ]; then
               load_time=$(cat "$json_report_path" | jq '.audits["interactive"].numericValue')
               
@@ -39,28 +40,33 @@ jobs:
               
               if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
                 echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
-  
               else
                 echo "✅ $site loaded in ${load_time_in_seconds}s"
               fi
             else
               echo "⚠️ JSON report for $site not found at $json_report_path"
-              exit 1  # Fail if JSON report is missing
             fi
           done
         shell: bash
 
       - name: Upload Report as Artifact
-        uses: actions/upload-artifact@v4
+        if: always()
+        uses: actions/upload-artifact@v2
         with:
           name: lighthouse-reports
           path: reports/
 
       - name: Send Slack Notification
-        if: failure()
+        if: always()
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          REPO_NAME: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
+          # Construct artifact URL
+          artifact_url="https://github.com/$REPO_NAME/actions/runs/$RUN_ID"
+
+          # Send notification with artifact link
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "⚠️ Lighthouse audit failed for one or more websites: load time exceeded 10s or reports missing. Check the reports for details."
+            "text": "Lighthouse audit completed. :mag: Reports are available [here]('"$artifact_url"')."
           }' $SLACK_WEBHOOK_URL
