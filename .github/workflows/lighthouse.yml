@@ -19,7 +19,7 @@ jobs:
         continue-on-error: true # Allow this step to continue even if it fails
         run: |
           mkdir reports
-          websites=( "https://himalayanflavor.onlineorder.site" "https://site2.com" "https://site3.com" )
+          websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan%20Flavor%20-%20Logan" "https://joshandjohns.onlineorder.site" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             site_name=$(echo $site | sed 's/https:\/\///g')
@@ -28,7 +28,11 @@ jobs:
               --chrome-flags="--headless --no-sandbox" \
               --output json \
               --output html \
-              --output-path="reports/$site_name.report"
+              --output-path="reports/$site_name.report" \
+              --form-factor=desktop \
+              --screen-emulation.disabled=true  # Disables mobile screen emulation for desktop test
+            
+            ls reports
             
             # Check the JSON result for TTI
             json_report_path="reports/$site_name.report.json"
