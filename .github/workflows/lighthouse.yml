@@ -22,7 +22,7 @@ jobs:
           websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan Flavor - Logan" "https://joshandjohns.onlineorder.site" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
-            site_name=$(echo $site | sed 's/https:\/\///g')
+            site_name=$(echo $site | sed 's|https://||g' | sed 's|/|_|g' | sed 's| |-|g')  # Sanitize the site name
             echo $site_name
             lighthouse "$site" \
               --chrome-flags="--headless --no-sandbox" \
