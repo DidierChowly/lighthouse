@@ -1,0 +1,57 @@
+name: Lighthouse Performance Check
+on: [push, pull_request]
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install Lighthouse
+        run: npm install -g lighthouse
+
+      - name: Run Lighthouse Audits
+        run: |
+          mkdir reports
+          websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan%20Flavor%20-%20Logan" "https://joshandjohns.onlineorder.site" )
+          for site in "${websites[@]}"; do
+            echo "Running Lighthouse audit for $site"
+            lighthouse "$site" \
+              --output json \
+              --output html \
+              --output-path "reports/$(echo $site | sed 's/https:\/\///g').report"
+            
+            # Check the JSON result for TTI
+            load_time=$(cat "reports/$(echo $site | sed 's/https:\/\///g').report.json" | jq '.audits["interactive"].numericValue')
+            
+            # Convert milliseconds to seconds
+            load_time_in_seconds=$(echo "$load_time / 1000" | bc -l)
+            
+            if (( $(echo "$load_time_in_seconds > 10" | bc -l) )); then
+              echo "❌ $site took more than 10 seconds to fully load: ${load_time_in_seconds}s"
+              exit 1  # Fail the action if load time is over 10 seconds
+            else
+              echo "✅ $site loaded in ${load_time_in_seconds}s"
+            fi
+          done
+        shell: bash
+
+      - name: Upload Report as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: lighthouse-reports
+          path: reports/
+
+      # - name: Send Slack Notification
+      #   if: failure()
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #   run: |
+      #     curl -X POST -H 'Content-type: application/json' --data '{
+      #       "text": "⚠️ Lighthouse audit failed for one or more websites: load time exceeded 10s. Check the reports for details."
+      #     }' $SLACK_WEBHOOK_URL
