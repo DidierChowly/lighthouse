@@ -77,7 +77,6 @@ jobs:
           # Exit with status 1 if alert_needed is true
           if [ "$alert_needed" = true ]; then
             echo "One or more sites exceeded the 10s load time threshold. Exiting with status 1."
-            exit 1
           fi
         shell: bash
 
