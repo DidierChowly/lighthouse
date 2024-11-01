@@ -110,10 +110,11 @@ jobs:
         run: |
           # Construct artifact URL
           artifact_url="https://github.com/$REPO_NAME/actions/runs/$RUN_ID"
+          artifact_url_files="https://github.com/$REPO_NAME/actions/runs/$RUN_ID/artifacts/$ARTIFACT_ID"
           echo $SLACK_WEBHOOK_URL
 
           # Send notification with artifact link
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Lighthouse audit completed. :mag: Reports are available \n [here]('"$artifact_url"') \n & [here]('"$ARTIFACT_ID"')  ."
+            "text": "Lighthouse audit completed. :mag: Reports are available \n [here]('"$artifact_url"') \n & [here]('"$artifact_url_files"')  ."
           }' $SLACK_WEBHOOK_URL
           exit 1
