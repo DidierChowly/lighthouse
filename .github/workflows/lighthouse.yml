@@ -96,7 +96,7 @@ jobs:
         run: |
           # Construct artifact URL
           artifact_url="https://github.com/$REPO_NAME/actions/runs/$RUN_ID"
-          echo SLACK_WEBHOOK_URL
+          echo $SLACK_WEBHOOK_URL
 
           # Send notification with artifact link
           curl -X POST -H 'Content-type: application/json' --data '{
