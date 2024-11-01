@@ -99,6 +99,6 @@ jobs:
           artifact_url="https://github.com/$REPO_NAME/actions/runs/$RUN_ID"
 
           # Send notification with artifact link
-          # curl -X POST -H 'Content-type: application/json' --data '{
-          #   "text": "Lighthouse audit completed. :mag: Reports are available [here]('"$artifact_url"')."
-          # }' $SLACK_WEBHOOK_URL
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "Lighthouse audit completed. :mag: Reports are available [here]('"$artifact_url"')."
+          }' https://hooks.slack.com/services/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
