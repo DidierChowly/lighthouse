@@ -100,5 +100,5 @@ jobs:
           # Send notification with artifact link
           curl -X POST -H 'Content-type: application/json' --data '{
             "text": "Lighthouse audit completed. :mag: Reports are available [here]('"$artifact_url"')."
-          }' $SLACK_WEBHOOK_URL
+          }' $SLACK_WEBHOOK
           exit 1
