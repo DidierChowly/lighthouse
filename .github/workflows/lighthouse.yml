@@ -86,6 +86,19 @@ jobs:
         with:
           name: lighthouse-reports
           path: reports/
+      
+      - name: Get Artifact ID
+        if: always()
+        id: get_artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts")
+          
+          # Extract the artifact ID from the response
+          artifact_id=$(echo "$response" | jq -r '.artifacts[0].id')
+          echo "artifact_id=$artifact_id" >> $GITHUB_ENV
 
       - name: Send Slack Notification
         if: env.alert_needed == 'true'
@@ -93,6 +106,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_CONFIG }}
           REPO_NAME: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
+          ARTIFACT_ID: ${{ env.artifact_id }}
         run: |
           # Construct artifact URL
           artifact_url="https://github.com/$REPO_NAME/actions/runs/$RUN_ID"
@@ -100,6 +114,6 @@ jobs:
 
           # Send notification with artifact link
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "Lighthouse audit completed. :mag: Reports are available [here]('"$artifact_url"')."
+            "text": "Lighthouse audit completed. :mag: Reports are available \n [here]('"$artifact_url"') \n & [here]('"$ARTIFACT_ID"')  ."
           }' $SLACK_WEBHOOK_URL
           exit 1
