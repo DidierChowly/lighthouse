@@ -23,14 +23,22 @@ jobs:
           node-version: "18"
 
       - name: Install Lighthouse
-        run: npm install -g lighthouse
+        run: 
+          npm install -g lighthouse
+          npm install firebase-admin jq
 
       - name: Run Lighthouse Audits
         # continue-on-error: true # Allow this step to continue even if it fails
         run: |
+          # Save Firebase credentials to a file
+          echo "$FIREBASE_CREDENTIALS" > firebase_credentials.json
+
           mkdir reports
           alert_needed=false
-          websites=( "https://himalayanflavor.onlineorder.site" "https://himalayanflavor.onlineorder.site/store/18911/Himalayan Flavor - Logan" "https://joshandjohns.onlineorder.site" )
+          websites=( 
+            "https://himalayanflavor.onlineorder.site"
+            "https://himalayanflavor.onlineorder.site/store/18911/Himalayan Flavor - Logan" 
+            "https://joshandjohns.onlineorder.site" )
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             site_name=$(echo $site | sed 's|https://||g' | sed 's|/|_|g' | sed 's| |-|g')  # Sanitize the site name
