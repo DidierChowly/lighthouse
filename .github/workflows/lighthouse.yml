@@ -35,8 +35,19 @@ jobs:
 
           mkdir reports
           alert_needed=false
-          websites=( "https://himalayanflavor.onlineorder.site", "https://himalayanflavor.onlineorder.site/store/18911/Himalayan%20Flavor%20-%20Logan", "https://joshandjohns.onlineorder.site", "https://joshandjohns.onlineorder.site/store/14778/Josh%20&%20John's%20-%20Flying%20Horse", "https://verde.onlineorder.site", "https://verde.onlineorder.site/store/14289", "https://smokinoakpizza.onlineorder.site", "https://smokinoakpizza.onlineorder.site/store/14749/Smokin'%20Oak%20Wood-Fired%20Pizza", "https://tomasitas.onlineorder.site", "https://tomasitas.onlineorder.site/store/14781/Tomasita's%20-%20Albuquerque", "https://chickenexpress.onlineorder.site", "https://chickenexpress.onlineorder.site/store/13828/Chicken%20Express%20-%20Springtown")
-          
+          websites=( "https://himalayanflavor.onlineorder.site"
+            "https://himalayanflavor.onlineorder.site/store/18911/Himalayan%20Flavor%20-%20Logan"
+            "https://joshandjohns.onlineorder.site"
+            "https://joshandjohns.onlineorder.site/store/14778/Josh%20&%20John's%20-%20Flying%20Horse"
+            "https://verde.onlineorder.site"
+            "https://verde.onlineorder.site/store/14289"
+            "https://smokinoakpizza.onlineorder.site"
+            "https://smokinoakpizza.onlineorder.site/store/14749/Smokin'%20Oak%20Wood-Fired%20Pizza"
+            "https://tomasitas.onlineorder.site"
+            "https://tomasitas.onlineorder.site/store/14781/Tomasita's%20-%20Albuquerque"
+            "https://chickenexpress.onlineorder.site"
+            "https://chickenexpress.onlineorder.site/store/13828/Chicken%20Express%20-%20Springtown")
+
           for site in "${websites[@]}"; do
             echo "Running Lighthouse audit for $site"
             site_name=$(echo $site | sed 's|https://||g' | sed 's|/|_|g' | sed 's| |-|g')  # Sanitize the site name
